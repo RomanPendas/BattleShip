@@ -1,62 +1,52 @@
 import java.util.Random;
-public class Boat{
+
+public class Boat {
     Random rng = new Random();
     private int length;
     private int hP;
-    private int[][] boatPosition;
 
-    private int ranRow;
-    private int ranColumn;
-    private final int vertOrHor;
+    private int[][] mapArr = Game.getGameMap(); //getting map at time of initialization for checking overlaps
 
-    public Boat(int size){
+    private int initRow;    //initial row to be randomly set
+    private int initCol;    //initial column to be randomly set
+    private final int orientation; // 0 for vert, 1 for horizontal
+
+    public Boat(int size) {
         length = size;
         hP = size;
-        vertOrHor = rng.nextInt(2) + 1;
-        if (vertOrHor == 1) { //for vertical
-            ranRow = rng.nextInt(9);
-            ranColumn = rng.nextInt(12);
-        }
-        else if (vertOrHor == 2) { // for horizontal
-            ranRow = rng.nextInt(12);
-            ranColumn = rng.nextInt(9);
-        }
-        switch(vertOrHor) {
-            case 1:
+        orientation = rng.nextInt(2);   //random from 0 to 1, 0=vert 1=hori
+
+        boolean placable = false;
+
+        //Checks if boat is able to be placed at initRow and initCol with their orientation
+        while (!placable) { //loops until suitable initial location is found
+            if (orientation == 0) { // for vertical
+                initRow = rng.nextInt(Game.getMapSize()-size);
+                initCol = rng.nextInt(Game.getMapSize());
                 for (int i = 0; i < length; i++) {
-                    for (int j = 0; j < length; j++) {
-                        boatPosition[i][j] = {ranRow + i},{ranColumn;
-                        boatPosition[++i] = ranColumn;
+                    if (mapArr[initRow + i][initCol] == 0) {
+                        placable = true;
+                    } else {
+                        placable = false;
+                        break;
                     }
                 }
-                break;
-            case 2:
+            } else if (orientation == 1) { // for horizontal
+                initRow = rng.nextInt(Game.getMapSize());
+                initCol = rng.nextInt(Game.getMapSize() - size);
                 for (int i = 0; i < length; i++) {
-                    boatPosition[i] = ranRow;
-                    boatPosition[++i] = ranColumn + i;
+                    if (mapArr[initRow][initCol + i] == 0) {
+                        placable = true;
+                    } else {
+                        placable = false;
+                        break;
+                    }
                 }
-                break;
+            }
         }
     }
-    public void setBoatPositionArray(int ranRow, int ranColumn){
-        this.ranRow = ranRow;
-        this.ranColumn = ranColumn;
-        switch(vertOrHor) {
-            case 1:
-                for (int i = 0; i < length;i++) {
-                    boatPosition[i] = ranRow + i;
-                    boatPosition[++i] = ranColumn;
-                }
-                break;
-            case 2:
-                for (int i = 0; i < length; i++) {
-                    boatPosition[i] = ranRow;
-                    boatPosition[++i] = ranColumn + i;
-                }
-                break;
-        }
-    }
-    public int getLength(){
+
+    public int getLength() {
         return length;
     }
     public int getHP() {
@@ -65,26 +55,14 @@ public class Boat{
     public void hitTaken() {
         hP--;
     }
-    public int getRanRow() {
-        return ranRow;
-    }
-    public void setRanRow(int ranRow) {
-        this.ranRow = ranRow;
-    }
-    public int getRanColumn() {
-        return ranColumn;
-    }
-    public void setRanColumn(int ranColumn) {
-        this.ranColumn = ranColumn;
-    }
 
-    public int getVertOrHor() {
-        return vertOrHor;
+    public int getInitRow() {
+        return initRow;
     }
-
-    public int[][] getBoatPositionArray() {
-        return boatPosition;
+    public int getInitCol() {
+        return initCol;
     }
-
-
+    public int getOrientation() {
+        return orientation;
+    }
 }
